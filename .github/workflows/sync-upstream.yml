@@ -1,0 +1,31 @@
+name: Sync upstream
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 */6 * * *'
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out fork
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Add upstream remote
+        run: |
+          git remote add upstream https://github.com/my8100/scrapydweb.git
+          git fetch upstream master
+
+      - name: Fast-forward default branch
+        run: |
+          git checkout master
+          git merge --ff-only upstream/master
+
+      - name: Push updates
+        run: git push origin master
